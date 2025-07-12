@@ -10,7 +10,7 @@ import { Fragment } from "react";
 // import toast from "react-hot-toast";
 import * as Yup from "yup";
 
-const LoginView = () => {
+const LoginPage = () => {
   const navigate = useNavigate();
 
   // Custom hook for login mutation
@@ -113,4 +113,4 @@ const LoginView = () => {
   );
 };
 
-export default LoginView;
+export default LoginPage;
