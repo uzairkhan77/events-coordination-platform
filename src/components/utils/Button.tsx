@@ -2,7 +2,7 @@
 import { Button as ShadCNButton } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Loader2, PlusIcon } from "lucide-react";
-import { ButtonHTMLAttributes, FC, ReactNode } from "react";
+import type { ButtonHTMLAttributes, FC, ReactNode } from "react";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   iconBefore?: ReactNode;

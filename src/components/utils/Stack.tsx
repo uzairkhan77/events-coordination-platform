@@ -1,7 +1,7 @@
 /* eslint-disable */
 "use client";
 import { cn } from "@/lib/utils";
-import React, { ReactNode } from "react";
+import type { ReactNode } from "react";
 
 interface ResponsiveProp<T> {
   xs?: T;

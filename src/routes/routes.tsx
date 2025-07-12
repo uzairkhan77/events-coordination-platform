@@ -2,6 +2,7 @@
 import { HomeLayout } from "@/layouts/home-layout/home-layout";
 import SignInPage from "@/pages/auth/sign-in/sign-in.page";
 import SignUpPage from "@/pages/auth/sign-up/sign-up.page";
+import { EventsPage } from "@/pages/main/events/events.page";
 import type { RouteObject } from "react-router-dom";
 // import OverviewPage from "@/pages/OverviewPage";
 // import NotFoundPage from "@/pages/NotFoundPage";
@@ -19,7 +20,7 @@ export const appRoutes: RouteObject[] = [
   {
     element: <HomeLayout />,
     children: [
-      //   { path: "/events", element: <EventsPage /> },
+      { path: "/events", element: <EventsPage /> },
       //   { path: "/my-events", element: <MyEventsPage /> },
       //   { path: "/profile/edit", element: <EditProfilePage /> },
     ],
