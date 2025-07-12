@@ -1,10 +1,13 @@
 import { cn } from "@/lib/utils";
-import React from "react";
-import { Outlet } from "react-router-dom";
+import type { ReactNode } from "react";
 
-const AuthLayout = () => {
+interface AuthLayoutProps {
+  children: ReactNode;
+}
+
+const AuthLayout = ({ children }: AuthLayoutProps) => {
   return (
-    <div className={cn("flex h-[100dvh]")}>
+    <div className={cn("flex h-[100dvh] border border-black w-[100dvw]")}>
       <div
         className={cn(
           "w-full md:w-1/2",
@@ -12,7 +15,7 @@ const AuthLayout = () => {
           "bg-foreground"
         )}
       >
-        <h1>Logo</h1>
+        <h1 className="text-white">Events Coordination</h1>
       </div>
       <div
         className={cn(
@@ -21,7 +24,7 @@ const AuthLayout = () => {
           "p-5"
         )}
       >
-        <Outlet />
+        {children}
       </div>
     </div>
   );

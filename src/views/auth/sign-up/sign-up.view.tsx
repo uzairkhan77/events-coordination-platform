@@ -2,56 +2,52 @@ import Title from "@/components/common/Title";
 import Button from "@/components/utils/Button";
 import Input from "@/components/utils/Input";
 import { cn } from "@/lib/utils";
-// import { UseUserLoginHook } from "@/services/react-query-client/auth/user-login";
-// import axios from "axios";
 import { useFormik } from "formik";
-import { useNavigate } from "react-router-dom";
-import { Fragment } from "react";
-// import toast from "react-hot-toast";
 import * as Yup from "yup";
+import { Fragment } from "react";
+import { useNavigate } from "react-router-dom";
+import { useFirebaseSignUp } from "@/hooks/useFireBaseSignup";
 
-const LoginPage = () => {
+const SignUpView = () => {
   const navigate = useNavigate();
-
-  // Custom hook for login mutation
-  //   const { mutate, isPending } = UseUserLoginHook();
+  const { signUp } = useFirebaseSignUp();
 
   interface InitialValues {
+    displayName: string;
     email: string;
     password: string;
   }
 
   const initialValues: InitialValues = {
+    displayName: "",
     email: "",
     password: "",
   };
 
-  //   const handleLoginClick = (values: InitialValues) => {
-  //     mutate(values, {
-  //       onSuccess: (data) => {
-  //         document.cookie = `token=${data.token}`;
-  //         document.cookie = `user=${JSON.stringify(data.user)}`;
-  //         toast.success("Login Successful");
-  //         navigate("/overview"); // ✅ instead of router.push
-  //       },
-  //       onError: (error) => {
-  //         if (axios.isAxiosError(error)) {
-  //           toast.error(error.response?.data.message);
-  //         }
-  //       },
-  //     });
-  //   };
+  const handleRegister = async (values: InitialValues) => {
+    const user = await signUp(
+      values.email,
+      values.password,
+      values.displayName
+    );
+    if (user) {
+      navigate("/overview"); // Go to main app/dashboard page
+    }
+  };
 
   const { values, handleBlur, handleChange, handleSubmit, errors, touched } =
     useFormik({
       initialValues,
       validationSchema: Yup.object({
+        displayName: Yup.string().required("Display name is required"),
         email: Yup.string()
           .email("Invalid email")
           .required("Email is required"),
-        password: Yup.string().required("Password is required"),
+        password: Yup.string()
+          .min(6, "Password must be at least 6 characters")
+          .required("Password is required"),
       }),
-      onSubmit: () => {},
+      onSubmit: handleRegister,
     });
 
   return (
@@ -60,17 +56,35 @@ const LoginPage = () => {
         onSubmit={handleSubmit}
         className={cn("max-w-[390px] w-full", "flex flex-col gap-2")}
       >
-        <Title className="mb-2">Login</Title>
+        <Title className="mb-2">Register</Title>
 
         <div className="w-full flex flex-col gap-2">
           <Input
-            name="email"
-            id="email"
-            value={values.email}
-            onBlur={handleBlur}
+            id="displayName"
+            name="displayName"
+            label="Full Name"
+            placeholder="Enter Full Name"
+            value={values.displayName}
             onChange={handleChange}
+            onBlur={handleBlur}
+            error={!!(errors.displayName && touched.displayName)}
+            helperText={
+              errors.displayName && touched.displayName
+                ? errors.displayName
+                : undefined
+            }
+          />
+        </div>
+
+        <div className="w-full flex flex-col gap-2">
+          <Input
+            id="email"
+            name="email"
             label="Email Address"
-            placeholder="Enter Email Address"
+            placeholder="Enter Email"
+            value={values.email}
+            onChange={handleChange}
+            onBlur={handleBlur}
             error={!!(errors.email && touched.email)}
             helperText={
               errors.email && touched.email ? errors.email : undefined
@@ -82,12 +96,12 @@ const LoginPage = () => {
           <Input
             id="password"
             name="password"
-            value={values.password}
-            onChange={handleChange}
-            onBlur={handleBlur}
             label="Password"
             placeholder="Enter Password"
             isPassword
+            value={values.password}
+            onChange={handleChange}
+            onBlur={handleBlur}
             error={!!(errors.password && touched.password)}
             helperText={
               errors.password && touched.password ? errors.password : undefined
@@ -95,22 +109,12 @@ const LoginPage = () => {
           />
         </div>
 
-        <div className="flex items-center">
-          <Button
-            variant="link"
-            className="text-tertiary p-0"
-            onClick={() => navigate("/auth/forgot-password")}
-          >
-            Forgot Password
-          </Button>
-        </div>
-
         <Button type="submit" className="mt-2" size="xlg">
-          Login
+          Create Account
         </Button>
       </form>
     </Fragment>
   );
 };
 
-export default LoginPage;
+export default SignUpView;
