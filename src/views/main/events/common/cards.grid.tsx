@@ -10,8 +10,7 @@ interface PaginatedEventGridProps {
   loading: boolean;
   hasMore: boolean;
   onLoadMore: () => void;
-  refetch: () => void;
-  CreateButtonComponent?: ComponentType<{ refetch: () => void }>;
+  CreateButtonComponent?: ComponentType;
   showCreateButton?: boolean;
 }
 
@@ -21,7 +20,6 @@ const PaginatedEventGrid = ({
   loading,
   hasMore,
   onLoadMore,
-  refetch,
   CreateButtonComponent,
   showCreateButton = false,
 }: PaginatedEventGridProps) => {
@@ -29,9 +27,7 @@ const PaginatedEventGrid = ({
     <div className="w-full max-w-[1200px] mx-auto space-y-6 py-6 px-4">
       <div className="flex flex-col md:flex-row gap-y-5 items-start justify-between md:items-center">
         <h1 className="text-2xl font-semibold">{title}</h1>
-        {showCreateButton && CreateButtonComponent && (
-          <CreateButtonComponent refetch={refetch} />
-        )}
+        {showCreateButton && CreateButtonComponent && <CreateButtonComponent />}
       </div>
 
       {/* Loading Skeletons */}

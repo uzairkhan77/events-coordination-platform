@@ -9,6 +9,7 @@ import {
   getDocs,
   QueryDocumentSnapshot,
   type DocumentData,
+  onSnapshot,
 } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import { db, auth } from "@/services/firebase/config";
@@ -23,29 +24,56 @@ export const usePaginatedCreatedEvents = (pageSize = 4) => {
   const [hasMore, setHasMore] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
 
-  const fetchNextPage = async () => {
+  // Real-time listener for first page
+  useEffect(() => {
     if (!userId) return;
     setLoading(true);
+    const eventsRef = collection(db, "events");
+    const q = query(
+      eventsRef,
+      where("createdBy", "==", userId),
+      orderBy("createdAt", "desc"),
+      limit(pageSize)
+    );
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        const newEvents = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...(doc.data() as EventData),
+        }));
+        setEvents(newEvents);
+        const lastVisible = snapshot.docs[snapshot.docs.length - 1] || null;
+        setLastDoc(lastVisible);
+        setHasMore(snapshot.docs.length === pageSize);
+        setLoading(false);
+      },
+      (error) => {
+        handleFirebaseError(error, "Failed to fetch created events");
+        setLoading(false);
+      }
+    );
+    return () => unsubscribe();
+  }, [userId, pageSize]);
 
+  // Fetch next page (not real-time)
+  const fetchNextPage = async () => {
+    if (!userId || !lastDoc) return;
+    setLoading(true);
     try {
       const eventsRef = collection(db, "events");
-      let q = query(
+      const q = query(
         eventsRef,
         where("createdBy", "==", userId),
         orderBy("createdAt", "desc"),
+        startAfter(lastDoc),
         limit(pageSize)
       );
-
-      if (lastDoc) {
-        q = query(q, startAfter(lastDoc));
-      }
-
       const snapshot = await getDocs(q);
       const newEvents = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...(doc.data() as EventData),
       }));
-
       setEvents((prev) => [...prev, ...newEvents]);
       const lastVisible = snapshot.docs[snapshot.docs.length - 1] || null;
       setLastDoc(lastVisible);
@@ -55,13 +83,6 @@ export const usePaginatedCreatedEvents = (pageSize = 4) => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const refetch = () => {
-    setEvents([]);
-    setLastDoc(null);
-    setHasMore(true);
-    if (userId) fetchNextPage();
   };
 
   useEffect(() => {
@@ -74,13 +95,5 @@ export const usePaginatedCreatedEvents = (pageSize = 4) => {
     return unsubscribe;
   }, []);
 
-  useEffect(() => {
-    if (!userId) return;
-
-    setEvents([]);
-    setLastDoc(null);
-    fetchNextPage();
-  }, [userId]);
-
-  return { events, loading, fetchNextPage, hasMore, refetch };
+  return { events, loading, fetchNextPage, hasMore };
 };

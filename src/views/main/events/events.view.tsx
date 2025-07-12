@@ -3,7 +3,7 @@ import CreateEventDialog from "../modals/createEvent.modal";
 import PaginatedEventGrid from "./common/cards.grid";
 
 const EventsView = () => {
-  const { events, loading, fetchNextPage, hasMore, refetch } =
+  const { events, loading, fetchNextPage, hasMore } =
     usePaginatedParticipantEvents();
 
   return (
@@ -15,7 +15,6 @@ const EventsView = () => {
       onLoadMore={fetchNextPage}
       showCreateButton
       CreateButtonComponent={CreateEventDialog}
-      refetch={refetch}
     />
   );
 };
