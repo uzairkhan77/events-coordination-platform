@@ -1,14 +1,14 @@
-import { usePaginatedParticipantEvents } from "@/hooks/firebase/events/usePaginatedParticipantEvents";
+import { usePaginatedCreatedEvents } from "@/hooks/firebase/events/usePaginatedCreatedEvents";
 import CreateEventDialog from "../modals/createEvent.modal";
 import PaginatedEventGrid from "./common/cards.grid";
 
-const EventsView = () => {
+export const MyEventsView = () => {
   const { events, loading, fetchNextPage, hasMore } =
-    usePaginatedParticipantEvents();
+    usePaginatedCreatedEvents();
 
   return (
     <PaginatedEventGrid
-      title="My Participating Events"
+      title="My Created Events"
       events={events}
       loading={loading}
       hasMore={hasMore}
@@ -18,5 +18,3 @@ const EventsView = () => {
     />
   );
 };
-
-export default EventsView;
