@@ -6,16 +6,17 @@ import EventDetailsPage from "@/pages/main/event-details/event-details.page";
 import { EventsPage } from "@/pages/main/events/events.page";
 import { MyEventsPage } from "@/pages/main/my-events/my-events.page";
 import type { RouteObject } from "react-router-dom";
+import AuthRedirect from "./AuthRedirect";
 import ProtectedRoute from "./ProtectedRoute";
+import PublicRoute from "./PublicRoute";
 
 export const appRoutes: RouteObject[] = [
   {
-    path: "/sign-in",
-    element: <SignInPage />,
-  },
-  {
-    path: "/sign-up",
-    element: <SignUpPage />,
+    element: <PublicRoute />,
+    children: [
+      { path: "/sign-in", element: <SignInPage /> },
+      { path: "/sign-up", element: <SignUpPage /> },
+    ],
   },
   {
     element: <ProtectedRoute />,
@@ -29,5 +30,9 @@ export const appRoutes: RouteObject[] = [
         ],
       },
     ],
+  },
+  {
+    path: "*",
+    element: <AuthRedirect />,
   },
 ];

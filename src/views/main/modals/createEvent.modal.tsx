@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -18,11 +17,13 @@ import {
   useUserSearch,
   type UserProfile,
 } from "@/hooks/firebase/users/useUserSearch";
+import Button from "@/components/utils/Button";
 
 const CreateEventDialog = () => {
   const [open, setOpen] = useState(false);
   const [searchInput, setSearchInput] = useState("");
   const [invitees, setInvitees] = useState<UserProfile[]>([]);
+  const [submitting, setSubmitting] = useState(false);
 
   const { searchResults, searchUsers, loading } = useUserSearch();
   const { createEvent } = useCreateEvent();
@@ -45,18 +46,28 @@ const CreateEventDialog = () => {
     validationSchema: Yup.object({
       title: Yup.string().required("Title is required"),
       description: Yup.string().required("Description is required"),
-      date: Yup.string().required("Date is required"),
+      date: Yup.string()
+        .required("Date is required")
+        .test("is-future", "Event date must be in the future", (value) => {
+          if (!value) return false;
+          const today = new Date();
+          const eventDate = new Date(value);
+          today.setHours(0, 0, 0, 0);
+          return eventDate >= today;
+        }),
       time: Yup.string().required("Time is required"),
       location: Yup.string().required("Location is required"),
     }),
     onSubmit: async (values, { resetForm }) => {
+      setSubmitting(true);
       await createEvent({
         ...values,
-        participants: invitees.map((u) => u.uid), // Pass UIDs
+        participants: invitees.map((u) => u.uid),
       });
       resetForm();
       setInvitees([]);
       setOpen(false);
+      setSubmitting(false);
     },
   });
 
@@ -100,14 +111,22 @@ const CreateEventDialog = () => {
             value={formik.values.date}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
+            autoComplete="off"
           />
+          {formik.touched.date && formik.errors.date && (
+            <p className="text-sm text-red-500">{formik.errors.date}</p>
+          )}
           <Input
             type="time"
             name="time"
             value={formik.values.time}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
+            autoComplete="off"
           />
+          {formik.touched.time && formik.errors.time && (
+            <p className="text-sm text-red-500">{formik.errors.time}</p>
+          )}
           <Input
             name="location"
             placeholder="Location"
@@ -115,6 +134,9 @@ const CreateEventDialog = () => {
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
           />
+          {formik.touched.location && formik.errors.location && (
+            <p className="text-sm text-red-500">{formik.errors.location}</p>
+          )}
 
           {/* Invite Users */}
           <div>
@@ -159,7 +181,9 @@ const CreateEventDialog = () => {
           </div>
 
           <div className="flex justify-end pt-2">
-            <Button type="submit">Create</Button>
+            <Button isLoading={submitting} type="submit" disabled={submitting}>
+              {"Create"}
+            </Button>
           </div>
         </form>
       </DialogContent>
