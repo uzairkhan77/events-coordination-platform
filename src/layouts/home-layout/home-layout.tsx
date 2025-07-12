@@ -3,7 +3,7 @@ import { Outlet } from "react-router-dom";
 
 export const HomeLayout = () => {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen min-w-screen">
       <Navbar />
       <main className="p-4">
         <Outlet />

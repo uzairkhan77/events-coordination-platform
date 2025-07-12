@@ -6,7 +6,7 @@ import { useFormik } from "formik";
 import { useNavigate } from "react-router-dom";
 import { Fragment } from "react";
 import * as Yup from "yup";
-import { useFirebaseAuth } from "@/hooks/useFirebaseAuth";
+import { useFirebaseAuth } from "@/hooks/firebase/auth/useFirebaseAuth";
 
 const SignInView = () => {
   const navigate = useNavigate();

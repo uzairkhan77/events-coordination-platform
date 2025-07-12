@@ -33,7 +33,7 @@ const Navbar = () => {
   return (
     <nav
       className={cn(
-        "w-full px-6 py-3 border-b bg-white flex items-center justify-between"
+        "w-full px-6 py-3 border-b border-gray-200 bg-white flex items-center justify-between"
       )}
     >
       {/* Logo */}
