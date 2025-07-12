@@ -2,6 +2,7 @@ import EventCard from "@/components/common/eventCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import type { EventData } from "@/types/interface/common.interface";
+import type { ComponentType } from "react";
 
 interface PaginatedEventGridProps {
   title: string;
@@ -9,7 +10,8 @@ interface PaginatedEventGridProps {
   loading: boolean;
   hasMore: boolean;
   onLoadMore: () => void;
-  CreateButtonComponent?: React.ReactNode;
+  refetch: () => void;
+  CreateButtonComponent?: ComponentType<{ refetch: () => void }>;
   showCreateButton?: boolean;
 }
 
@@ -19,19 +21,22 @@ const PaginatedEventGrid = ({
   loading,
   hasMore,
   onLoadMore,
+  refetch,
   CreateButtonComponent,
   showCreateButton = false,
 }: PaginatedEventGridProps) => {
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-6 py-6 px-4">
-      <div className="flex justify-between items-center">
+    <div className="w-full max-w-[1200px] mx-auto space-y-6 py-6 px-4">
+      <div className="flex flex-col md:flex-row gap-y-5 items-start justify-between md:items-center">
         <h1 className="text-2xl font-semibold">{title}</h1>
-        {showCreateButton && CreateButtonComponent}
+        {showCreateButton && CreateButtonComponent && (
+          <CreateButtonComponent refetch={refetch} />
+        )}
       </div>
 
       {/* Loading Skeletons */}
       {loading && events.length === 0 ? (
-        <div className="space-y-4">
+        <div className="grid sm:grid-cols-1 md:grid-cols-3 gap-4">
           {[...Array(4)].map((_, i) => (
             <Skeleton key={i} className="h-40 w-full rounded-xl" />
           ))}
@@ -40,12 +45,11 @@ const PaginatedEventGrid = ({
         <p className="text-center text-muted-foreground">No events found.</p>
       ) : (
         <>
-          <div className="grid sm:grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid sm:grid-cols-1 md:grid-cols-3 gap-4">
             {events.map((event, i) => (
               <EventCard key={i} event={event} />
             ))}
           </div>
-
           {/* Load More Button */}
           {hasMore && (
             <div className="flex justify-center mt-6">

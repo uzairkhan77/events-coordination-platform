@@ -57,6 +57,13 @@ export const usePaginatedCreatedEvents = (pageSize = 4) => {
     }
   };
 
+  const refetch = () => {
+    setEvents([]);
+    setLastDoc(null);
+    setHasMore(true);
+    if (userId) fetchNextPage();
+  };
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -75,5 +82,5 @@ export const usePaginatedCreatedEvents = (pageSize = 4) => {
     fetchNextPage();
   }, [userId]);
 
-  return { events, loading, fetchNextPage, hasMore };
+  return { events, loading, fetchNextPage, hasMore, refetch };
 };
