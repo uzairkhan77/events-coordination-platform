@@ -18,3 +18,10 @@ export interface UserProfile {
   displayName?: string;
   createdAt: Timestamp;
 }
+
+export interface EventMessage {
+  id: string;
+  message: string;
+  createdBy: string;
+  createdAt: Date;
+}

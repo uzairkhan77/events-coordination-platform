@@ -15,7 +15,10 @@ const AuthLayout = ({ children }: AuthLayoutProps) => {
           "bg-foreground"
         )}
       >
-        <h1 className="text-white">Events Coordination</h1>
+        <h1 className="text-4xl font-bold flex items-center gap-2">
+          <span className="text-orange-500">Events</span>
+          <span className="text-white">Coordination</span>
+        </h1>
       </div>
       <div
         className={cn(

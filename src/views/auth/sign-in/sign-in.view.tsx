@@ -3,14 +3,14 @@ import Button from "@/components/utils/Button";
 import Input from "@/components/utils/Input";
 import { cn } from "@/lib/utils";
 import { useFormik } from "formik";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Fragment } from "react";
 import * as Yup from "yup";
 import { useFirebaseAuth } from "@/hooks/firebase/auth/useFirebaseAuth";
 
 const SignInView = () => {
   const navigate = useNavigate();
-  const { login } = useFirebaseAuth();
+  const { login, loading } = useFirebaseAuth();
 
   interface InitialValues {
     email: string;
@@ -25,7 +25,7 @@ const SignInView = () => {
   const handleSubmitLogin = async (values: InitialValues) => {
     const user = await login(values.email, values.password);
     if (user) {
-      navigate("/overview"); // ✅ Go to protected page after login
+      navigate("/events");
     }
   };
 
@@ -44,6 +44,7 @@ const SignInView = () => {
   return (
     <Fragment>
       <form
+        autoComplete="off"
         onSubmit={handleSubmit}
         className={cn("max-w-[390px] w-full", "flex flex-col gap-2")}
       >
@@ -81,18 +82,14 @@ const SignInView = () => {
             }
           />
         </div>
+        <p>
+          Don't have an account?{" "}
+          <Link className="" to="/sign-up">
+            Register
+          </Link>
+        </p>
 
-        <div className="flex items-center">
-          <Button
-            variant="link"
-            className="text-tertiary p-0"
-            onClick={() => navigate("/auth/forgot-password")}
-          >
-            Forgot Password
-          </Button>
-        </div>
-
-        <Button type="submit" className="mt-2" size="xlg">
+        <Button isLoading={loading} type="submit" className="mt-2" size="xlg">
           Login
         </Button>
       </form>

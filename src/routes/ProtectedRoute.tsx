@@ -1,16 +1,21 @@
 // src/routes/ProtectedRoute.tsx
 import { Navigate, Outlet } from "react-router-dom";
-
-const isAuthenticated = (): boolean => {
-  const token = document.cookie
-    .split("; ")
-    .find((row) => row.startsWith("token="))
-    ?.split("=")[1];
-  return Boolean(token);
-};
+import { useEffect, useState } from "react";
+import { auth } from "@/services/firebase/config";
+import { onAuthStateChanged } from "firebase/auth";
 
 const ProtectedRoute = () => {
-  return isAuthenticated() ? <Outlet /> : <Navigate to="/" replace />;
+  const [isAuth, setIsAuth] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setIsAuth(!!user);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  if (isAuth === null) return null; // or a loading spinner
+  return isAuth ? <Outlet /> : <Navigate to="/sign-in" replace />;
 };
 
 export default ProtectedRoute;

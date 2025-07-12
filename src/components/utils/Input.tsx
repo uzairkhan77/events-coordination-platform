@@ -100,13 +100,11 @@ const Input = forwardRef<HTMLInputElement, InputP>(
           />
           {isPassword && (
             <button
-              className={cn(
-                MAIN_BACKGROUND_COLOR,
-                "p-2",
-                "rounded-lg",
-                FONT_COLOR,
-                "cursor-pointer"
-              )}
+              style={{
+                backgroundColor: "transparent",
+                outline: "none",
+                boxShadow: "none",
+              }}
               onClick={() => setShowPassword((prev) => !prev)}
               type="button"
             >
@@ -114,14 +112,7 @@ const Input = forwardRef<HTMLInputElement, InputP>(
             </button>
           )}
           {iconAfter && (
-            <div
-              className={cn(
-                MAIN_BACKGROUND_COLOR,
-                "p-2",
-                "rounded-lg",
-                FONT_COLOR
-              )}
-            >
+            <div className={cn("p-2 rounded-lg text-text-primary")}>
               {iconAfter}
             </div>
           )}

@@ -5,12 +5,12 @@ import { cn } from "@/lib/utils";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { Fragment } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useFirebaseSignUp } from "@/hooks/firebase/auth/useFireBaseSignup";
 
 const SignUpView = () => {
   const navigate = useNavigate();
-  const { signUp } = useFirebaseSignUp();
+  const { signUp, loading } = useFirebaseSignUp();
 
   interface InitialValues {
     displayName: string;
@@ -31,7 +31,7 @@ const SignUpView = () => {
       values.displayName
     );
     if (user) {
-      navigate("/overview"); // Go to main app/dashboard page
+      navigate("/events");
     }
   };
 
@@ -53,6 +53,7 @@ const SignUpView = () => {
   return (
     <Fragment>
       <form
+        autoComplete="off"
         onSubmit={handleSubmit}
         className={cn("max-w-[390px] w-full", "flex flex-col gap-2")}
       >
@@ -108,8 +109,14 @@ const SignUpView = () => {
             }
           />
         </div>
+        <p>
+          Already have an account?{" "}
+          <Link className="" to="/sign-in">
+            Login
+          </Link>
+        </p>
 
-        <Button type="submit" className="mt-2" size="xlg">
+        <Button isLoading={loading} type="submit" className="mt-2" size="xlg">
           Create Account
         </Button>
       </form>

@@ -2,9 +2,11 @@
 import { HomeLayout } from "@/layouts/home-layout/home-layout";
 import SignInPage from "@/pages/auth/sign-in/sign-in.page";
 import SignUpPage from "@/pages/auth/sign-up/sign-up.page";
+import EventDetailsPage from "@/pages/main/event-details/event-details.page";
 import { EventsPage } from "@/pages/main/events/events.page";
 import { MyEventsPage } from "@/pages/main/my-events/my-events.page";
 import type { RouteObject } from "react-router-dom";
+import ProtectedRoute from "./ProtectedRoute";
 
 export const appRoutes: RouteObject[] = [
   {
@@ -16,11 +18,16 @@ export const appRoutes: RouteObject[] = [
     element: <SignUpPage />,
   },
   {
-    element: <HomeLayout />,
+    element: <ProtectedRoute />,
     children: [
-      { path: "/events", element: <EventsPage /> },
-      { path: "/my-events", element: <MyEventsPage /> },
-      //   { path: "/profile/edit", element: <EditProfilePage /> },
+      {
+        element: <HomeLayout />,
+        children: [
+          { path: "/events", element: <EventsPage /> },
+          { path: "/my-events", element: <MyEventsPage /> },
+          { path: "/events/:id", element: <EventDetailsPage /> },
+        ],
+      },
     ],
   },
 ];

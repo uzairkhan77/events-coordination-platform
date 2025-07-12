@@ -10,6 +10,7 @@ import {
   QueryDocumentSnapshot,
   type DocumentData,
 } from "firebase/firestore";
+import { onAuthStateChanged } from "firebase/auth";
 import { db, auth } from "@/services/firebase/config";
 import { handleFirebaseError } from "@/lib/handleFirebaseError";
 import type { EventData } from "@/types/interface/common.interface";
@@ -20,20 +21,18 @@ export const usePaginatedParticipantEvents = (pageSize = 4) => {
     useState<QueryDocumentSnapshot<DocumentData> | null>(null);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+  const [userId, setUserId] = useState<string | null>(null);
 
   const fetchNextPage = async () => {
+    if (!userId) return;
+
     setLoading(true);
-    const user = auth.currentUser;
-    if (!user) {
-      setLoading(false);
-      return;
-    }
 
     try {
       const eventsRef = collection(db, "events");
       let q = query(
         eventsRef,
-        where("participants", "array-contains", user.uid),
+        where("participants", "array-contains", userId),
         orderBy("createdAt", "desc"),
         limit(pageSize)
       );
@@ -60,10 +59,22 @@ export const usePaginatedParticipantEvents = (pageSize = 4) => {
   };
 
   useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUserId(user.uid);
+      }
+    });
+
+    return unsubscribe;
+  }, []);
+
+  useEffect(() => {
+    if (!userId) return;
+
     setEvents([]);
     setLastDoc(null);
-    fetchNextPage(); // Fetch first page on mount
-  }, []);
+    fetchNextPage();
+  }, [userId]);
 
   return { events, loading, fetchNextPage, hasMore };
 };
